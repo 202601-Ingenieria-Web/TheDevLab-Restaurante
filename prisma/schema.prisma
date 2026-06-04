@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Enum_Role {
+  ADMIN
+  USER
+}
+
+enum Enum_MovementType {
+  ENTRADA
+  SALIDA
+}
+
+enum Enum_OrderStatus {
+  PENDIENTE
+  EN_PREPARACION
+  LISTO
+  ENTREGADO
+  CANCELADO
+}
+
+enum Enum_PaymentMethod {
+  EFECTIVO
+  TARJETA
+  TRANSFERENCIA
+}
+
+enum Enum_OrderType {
+  EN_SITIO
+  PARA_LLEVAR
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String    @default("")
+  image     String?
+  deleted   Boolean   @default(false)
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  role      Enum_Role @default(USER)
+
+  movements Movement[]
+  maestros  Maestro[]
+  pedidos   Pedido[]
+  pagos     Pago[]
+}
+
+model Maestro {
+  id        String     @id @default(cuid())
+  name      String
+  unit      String     @default("und")
+  balance   Float      @default(0)
+  deleted   Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  movements Movement[]
+}
+
+model Movement {
+  id        String            @id @default(cuid())
+  type      Enum_MovementType
+  quantity  Float
+  createdAt DateTime          @default(now())
+  maestroId String
+  maestro   Maestro           @relation(fields: [maestroId], references: [id])
+  userId    String
+  user      User              @relation(fields: [userId], references: [id])
+}
+
+model Producto {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  detalles DetallePedido[]
+}
+
+model Pedido {
+  id        String           @id @default(cuid())
+  status    Enum_OrderStatus @default(PENDIENTE)
+  orderType Enum_OrderType
+  total     Float            @default(0)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+
+  detalles DetallePedido[]
+  pago     Pago?
+}
+
+model DetallePedido {
+  id         String   @id @default(cuid())
+  quantity   Int
+  unitPrice  Float
+  subtotal   Float
+  createdAt  DateTime @default(now())
+  pedidoId   String
+  pedido     Pedido   @relation(fields: [pedidoId], references: [id])
+  productoId String
+  producto   Producto @relation(fields: [productoId], references: [id])
+}
+
+model Pago {
+  id            String             @id @default(cuid())
+  amount        Float
+  paymentMethod Enum_PaymentMethod
+  createdAt     DateTime           @default(now())
+  pedidoId      String             @unique
+  pedido        Pedido             @relation(fields: [pedidoId], references: [id])
+  userId        String
+  user          User               @relation(fields: [userId], references: [id])
+}
