@@ -3,12 +3,13 @@ import prisma from '@/lib/prisma';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
+    const { id } = await params;
     const { status } = await request.json();
     const pedido = await prisma.pedido.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
       include: {
         detalles: { include: { producto: true } },
