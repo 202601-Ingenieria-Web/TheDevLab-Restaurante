@@ -1,4 +1,4 @@
-import { PrismaClient, Enum_Role } from '../app/generated/prisma/client';
+import { PrismaClient, Enum_Role } from '../app/generated/prisma';
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as dotenv from 'dotenv';
 

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
 interface Maestro {
@@ -34,6 +35,7 @@ export default function MaestrosPage() {
   const [maestros, setMaestros] = useState<Maestro[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [name, setName] = useState('');
   const [balance, setBalance] = useState('');
   const [unit, setUnit] = useState('kg');
@@ -51,6 +53,8 @@ export default function MaestrosPage() {
       setMaestros(data.maestros || []);
     } catch (err) {
       console.error('Failed to fetch maestros', err);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -104,18 +108,29 @@ export default function MaestrosPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Total ingredientes</p>
-          <p className="text-3xl font-bold text-stone-900">{maestros.length}</p>
-        </div>
-        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Stock disponible</p>
-          <p className="text-3xl font-bold text-green-700">{maestros.filter(m => m.balance > 0).length}</p>
-        </div>
-        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Sin stock</p>
-          <p className="text-3xl font-bold text-red-600">{maestros.filter(m => m.balance <= 0).length}</p>
-        </div>
+        {fetching ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm space-y-2">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+          ))
+        ) : (
+          <>
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Total ingredientes</p>
+              <p className="text-3xl font-bold text-stone-900">{maestros.length}</p>
+            </div>
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Stock disponible</p>
+              <p className="text-3xl font-bold text-green-700">{maestros.filter(m => m.balance > 0).length}</p>
+            </div>
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Sin stock</p>
+              <p className="text-3xl font-bold text-red-600">{maestros.filter(m => m.balance <= 0).length}</p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Tabla */}
@@ -131,7 +146,17 @@ export default function MaestrosPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {maestros.length === 0 ? (
+            {fetching ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-32" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-5 w-14 rounded-full" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-10" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-24" /></td>
+                </tr>
+              ))
+            ) : maestros.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-16 text-center text-stone-400 text-sm">
                   No hay ingredientes registrados en el inventario

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import {
   LineChart,
@@ -51,6 +52,8 @@ export default function TransaccionesPage() {
   const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [fetchingMovimientos, setFetchingMovimientos] = useState(false);
   const [type, setType] = useState<string>('ENTRADA');
   const [quantity, setQuantity] = useState('');
 
@@ -59,6 +62,7 @@ export default function TransaccionesPage() {
       const res = await fetch('/api/maestros');
       const data = await res.json();
       setMaestros(data.maestros || []);
+      setFetching(false);
     };
     fetchMaestros();
   }, []);
@@ -66,9 +70,11 @@ export default function TransaccionesPage() {
   useEffect(() => {
     if (!selectedMaestro) return;
     const fetchMovimientos = async () => {
+      setFetchingMovimientos(true);
       const res = await fetch(`/api/movimientos?maestroId=${selectedMaestro}`);
       const data = await res.json();
       setMovimientos(data.movimientos || []);
+      setFetchingMovimientos(false);
     };
     fetchMovimientos();
   }, [selectedMaestro]);
@@ -144,18 +150,22 @@ export default function TransaccionesPage() {
         <Label className="text-stone-600 text-xs font-semibold uppercase tracking-wider mb-2 block">
           Seleccionar ingrediente
         </Label>
-        <Select onValueChange={setSelectedMaestro}>
-          <SelectTrigger className="h-10 border-stone-200 bg-white">
-            <SelectValue placeholder="Selecciona un ingrediente..." />
-          </SelectTrigger>
-          <SelectContent>
-            {maestros.map((m) => (
-              <SelectItem key={m.id} value={m.id}>
-                {m.name} — {m.balance} {m.unit}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {fetching ? (
+          <Skeleton className="h-10 w-full rounded-md" />
+        ) : (
+          <Select onValueChange={setSelectedMaestro}>
+            <SelectTrigger className="h-10 border-stone-200 bg-white">
+              <SelectValue placeholder="Selecciona un ingrediente..." />
+            </SelectTrigger>
+            <SelectContent>
+              {maestros.map((m) => (
+                <SelectItem key={m.id} value={m.id}>
+                  {m.name} — {m.balance} {m.unit}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Tabla */}
@@ -177,6 +187,16 @@ export default function TransaccionesPage() {
                   Selecciona un ingrediente para ver sus movimientos
                 </td>
               </tr>
+            ) : fetchingMovimientos ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-24" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-5 w-16 rounded-full" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-12" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-28" /></td>
+                </tr>
+              ))
             ) : movimientos.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-16 text-center text-stone-400 text-sm">

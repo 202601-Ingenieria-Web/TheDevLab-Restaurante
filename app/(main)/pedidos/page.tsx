@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
 interface Producto {
@@ -71,6 +72,7 @@ export default function PedidosPage() {
   const [selectedProducto, setSelectedProducto] = useState('');
   const [quantity, setQuantity] = useState('1');
 
+  const [fetching, setFetching] = useState(true);
   const [pagoOpen, setPagoOpen] = useState(false);
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('EFECTIVO');
@@ -85,6 +87,7 @@ export default function PedidosPage() {
     const res = await fetch('/api/pedidos');
     const data = await res.json();
     setPedidos(data.pedidos || []);
+    setFetching(false);
   };
 
   const fetchProductos = async () => {
@@ -210,22 +213,33 @@ export default function PedidosPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Pendientes</p>
-          <p className="text-3xl font-bold text-yellow-600">{pendientes}</p>
-        </div>
-        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">En preparación</p>
-          <p className="text-3xl font-bold text-blue-600">{enPreparacion}</p>
-        </div>
-        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Entregados</p>
-          <p className="text-3xl font-bold text-green-600">{entregados}</p>
-        </div>
-        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Sin pago</p>
-          <p className="text-3xl font-bold text-red-600">{sinPago}</p>
-        </div>
+        {fetching ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm space-y-2">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-8 w-12" />
+            </div>
+          ))
+        ) : (
+          <>
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Pendientes</p>
+              <p className="text-3xl font-bold text-yellow-600">{pendientes}</p>
+            </div>
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">En preparación</p>
+              <p className="text-3xl font-bold text-blue-600">{enPreparacion}</p>
+            </div>
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Entregados</p>
+              <p className="text-3xl font-bold text-green-600">{entregados}</p>
+            </div>
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Sin pago</p>
+              <p className="text-3xl font-bold text-red-600">{sinPago}</p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Tabla */}
@@ -244,7 +258,19 @@ export default function PedidosPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {pedidos.length === 0 ? (
+            {fetching ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <tr key={i}>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-28" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-16" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-5 w-24 rounded-full" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-5 w-20 rounded-full" /></td>
+                  <td className="px-6 py-4"><Skeleton className="h-4 w-16" /></td>
+                </tr>
+              ))
+            ) : pedidos.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-6 py-16 text-center text-stone-400 text-sm">
                   No hay pedidos registrados
