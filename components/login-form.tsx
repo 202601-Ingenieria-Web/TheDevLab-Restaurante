@@ -28,7 +28,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       if (result?.error) {
         toast.error('Credenciales incorrectas');
       } else {
-        router.push('/transacciones');
+        window.location.href = '/transacciones';
       }
     } catch {
       toast.error('Error al iniciar sesión');
