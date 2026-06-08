@@ -92,7 +92,7 @@ export default function MaestrosPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Cocina</p>
+          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Inventario</p>
           <h1 className="text-3xl font-bold text-stone-900">Gestión de Inventario</h1>
           <p className="text-stone-500 text-sm mt-1">Administra los ingredientes y recursos disponibles.</p>
         </div>

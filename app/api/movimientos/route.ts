@@ -14,7 +14,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const movimientos = await prisma.movement.findMany({
       where: { maestroId },
       include: { user: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
     });
     return NextResponse.json({ movimientos }, { status: 200 });
   } catch (error) {

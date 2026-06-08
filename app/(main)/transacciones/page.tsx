@@ -21,13 +21,15 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
+  Legend,
 } from 'recharts';
 
 interface Maestro {
@@ -110,16 +112,19 @@ export default function TransaccionesPage() {
   const chartData = movimientos
     .slice()
     .reverse()
-    .reduce((acc: { fecha: string; saldo: number }[], mov) => {
-      const fecha = new Date(mov.createdAt).toLocaleDateString('es-CO');
-      const last = acc[acc.length - 1];
-      const prevSaldo = last ? last.saldo : 0;
-      const delta = mov.type === 'ENTRADA' ? mov.quantity : -mov.quantity;
+    .reduce((acc: { fecha: string; entradas: number; salidas: number }[], mov) => {
+      const date = new Date(mov.createdAt);
+      const fecha = `${date.toLocaleString('es-CO', { month: 'short' })} ${date.getFullYear()}`;
       const existing = acc.find((d) => d.fecha === fecha);
       if (existing) {
-        existing.saldo += delta;
+        if (mov.type === 'ENTRADA') existing.entradas += mov.quantity;
+        else existing.salidas += mov.quantity;
       } else {
-        acc.push({ fecha, saldo: prevSaldo + delta });
+        acc.push({
+          fecha,
+          entradas: mov.type === 'ENTRADA' ? mov.quantity : 0,
+          salidas: mov.type === 'SALIDA' ? mov.quantity : 0,
+        });
       }
       return acc;
     }, []);
@@ -132,7 +137,7 @@ export default function TransaccionesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Inventario</p>
+          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Inventario - Movimientos</p>
           <h1 className="text-3xl font-bold text-stone-900">Gestión de Transacciones</h1>
           <p className="text-stone-500 text-sm mt-1">Administra los movimientos del inventario del restaurante.</p>
         </div>
@@ -234,11 +239,11 @@ export default function TransaccionesPage() {
           <div className="mb-6">
             <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Evolución</p>
             <h2 className="text-lg font-semibold text-stone-900">
-              Saldos diarios — {maestroSeleccionado?.name}
+              Movimientos mensuales — {maestroSeleccionado?.name}
             </h2>
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
+            <BarChart data={chartData} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="fecha" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
@@ -249,16 +254,19 @@ export default function TransaccionesPage() {
                   fontSize: 12,
                   boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                 }}
+                formatter={(value, name) => [
+                  `${value} ${maestroSeleccionado?.unit}`,
+                  name === 'entradas' ? 'Entradas' : 'Salidas'
+                ]}
               />
-              <Line
-                type="monotone"
-                dataKey="saldo"
-                stroke="#1e293b"
-                strokeWidth={2}
-                dot={{ fill: '#1e293b', r: 4, strokeWidth: 0 }}
-                activeDot={{ r: 6, strokeWidth: 0 }}
+              <Legend
+                formatter={(value) => value === 'entradas' ? 'Entradas' : 'Salidas'}
+                wrapperStyle={{ fontSize: 12, paddingTop: 16 }}
               />
-            </LineChart>
+              <ReferenceLine y={0} stroke="#e2e8f0" />
+              <Bar dataKey="entradas" fill="#15803d" radius={[4, 4, 0, 0]} name="entradas" />
+              <Bar dataKey="salidas" fill="#dc2626" radius={[4, 4, 0, 0]} name="salidas" />
+            </BarChart>
           </ResponsiveContainer>
         </div>
       )}
@@ -285,9 +293,7 @@ export default function TransaccionesPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-stone-700 text-sm font-medium">
-                Cantidad
-              </Label>
+              <Label className="text-stone-700 text-sm font-medium">Cantidad</Label>
               <div className="flex gap-2">
                 <Input
                   type="number"
