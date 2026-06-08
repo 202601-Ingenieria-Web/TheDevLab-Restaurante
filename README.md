@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TheDevLab Restaurante 
 
-## Getting Started
+Sistema web de gestión para restaurante desarrollado con Next.js, React, TailwindCSS y Supabase.
 
-First, run the development server:
+##  Descripción
 
+Aplicación web fullstack que permite gestionar de forma integral las operaciones de un restaurante: inventario de ingredientes, pedidos, pagos y administración de usuarios con roles diferenciados.
+
+##  Integrantes
+
+- Mariana Carvajal Rueda
+- Roller Andrés Hernandez López
+
+
+##  Demo
+
+🔗 [Ver aplicación desplegada]()
+
+##  Credenciales de prueba
+
+| Rol | Correo | Contraseña |
+|-----|--------|------------|
+| Administrador | admin@restaurante.com | admin123 |
+| Mesero | user@restaurante.com | user123 |
+
+## Tecnologías
+
+- **Frontend:** Next.js 16, React, TailwindCSS, shadcn/ui
+- **Backend:** Next.js API Routes
+- **Base de datos:** PostgreSQL (Supabase)
+- **ORM:** Prisma
+- **Autenticación:** NextAuth.js (JWT)
+- **Gráficas:** Recharts
+
+##  Instalación y ejecución local
+
+### Prerrequisitos
+- Node.js 18+
+- Cuenta en Supabase
+
+### Pasos
+
+1. Clona el repositorio:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/202601-Ingenieria-Web/TheDevLab-Restaurante
+cd TheDevLab-Restaurante
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Instala las dependencias:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Crea el archivo `.env` en la raíz:
+```env
+DATABASE_URL=postgresql://postgres.yulyktngpgjiisdltnik:Thelabrestaurante@aws-1-sa-east-1.pooler.supabase.com:5432/postgres
+AUTH_SECRET=70c25f1482291bb021ae74f8f7046ee9bc6ba9301631903f3836c3102d54120d
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Ejecuta las migraciones:
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
 
-## Learn More
+5. Carga los datos iniciales:
+```bash
+npx tsx --env-file=.env scripts/seed.ts
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Inicia el servidor:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+7. Abre [http://localhost:3000](http://localhost:3000)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Funcionalidades
 
-## Deploy on Vercel
+### Inventario (Maestros)
+- Gestión de ingredientes con unidades de medida
+- Control de stock con alertas visuales
+- Validación para evitar salidas mayores al stock disponible
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Transacciones
+- Registro de entradas y salidas por ingrediente
+- Gráfica de movimientos del mes
+- Trazabilidad por usuario responsable
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Pedidos
+- Creación de pedidos con múltiples productos
+- Estados: Pendiente → En preparación → Listo → Entregado
+- Tipos: En sitio / Para llevar
+- Registro de pagos: Efectivo, Tarjeta, Transferencia
+
+### Usuarios
+- Roles diferenciados: ADMIN y Mesero (USER)
+- Creación y edición de usuarios por el administrador
+- Protección de rutas por rol
