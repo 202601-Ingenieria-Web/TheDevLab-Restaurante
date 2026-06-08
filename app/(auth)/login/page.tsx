@@ -47,18 +47,18 @@ export default function LoginPage() {
             Donde cada ingrediente cuenta y el servicio importa.
           </p>
           <div className="pt-4 border-t border-stone-700 space-y-3">
-            <p className="text-stone-500 text-xs uppercase tracking-widest">Menu del día</p>
+            <p className="text-stone-500 text-xs uppercase tracking-widest"></p>
             <div className="space-y-2">
               <div className="flex justify-between text-stone-300 text-sm">
-                <span>sopita</span>
+                <span></span>
                 <span className="text-amber-400">·····</span>
               </div>
               <div className="flex justify-between text-stone-300 text-sm">
-                <span>mondongo</span>
+                <span></span>
                 <span className="text-amber-400">·····</span>
               </div>
               <div className="flex justify-between text-stone-300 text-sm">
-                <span>lechuga</span>
+                <span></span>
                 <span className="text-amber-400">·····</span>
               </div>
             </div>

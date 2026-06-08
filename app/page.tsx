@@ -42,7 +42,7 @@ export default function LandingPage() {
         <div className="relative z-10 flex justify-center gap-16 px-12 py-10 border-t border-white/10">
           <div className="text-center">
             <p className="text-stone-400 text-xs uppercase tracking-wider mb-1">Dirección</p>
-            <p className="text-white text-sm">Calle 10 #43-12, Medellín</p>
+            <p className="text-white text-sm">Medellín</p>
           </div>
           <div className="text-center">
             <p className="text-stone-400 text-xs uppercase tracking-wider mb-1">Teléfono</p>
