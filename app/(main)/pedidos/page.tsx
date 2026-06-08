@@ -212,38 +212,27 @@ export default function PedidosPage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-4 gap-4">
-        {fetching ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm space-y-2">
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="h-8 w-12" />
-            </div>
-          ))
-        ) : (
-          <>
-            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Pendientes</p>
-              <p className="text-3xl font-bold text-yellow-600">{pendientes}</p>
-            </div>
-            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">En preparación</p>
-              <p className="text-3xl font-bold text-blue-600">{enPreparacion}</p>
-            </div>
-            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Entregados</p>
-              <p className="text-3xl font-bold text-green-600">{entregados}</p>
-            </div>
-            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Sin pago</p>
-              <p className="text-3xl font-bold text-red-600">{sinPago}</p>
-            </div>
-          </>
-        )}
-      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <div className="bg-white border border-stone-200 rounded-xl p-4 md:p-5 shadow-sm">
+    <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Pendientes</p>
+    <p className="text-2xl md:text-3xl font-bold text-yellow-600">{pendientes}</p>
+  </div>
+  <div className="bg-white border border-stone-200 rounded-xl p-4 md:p-5 shadow-sm">
+    <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">En preparación</p>
+    <p className="text-2xl md:text-3xl font-bold text-blue-600">{enPreparacion}</p>
+  </div>
+  <div className="bg-white border border-stone-200 rounded-xl p-4 md:p-5 shadow-sm">
+    <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Entregados</p>
+    <p className="text-2xl md:text-3xl font-bold text-green-600">{entregados}</p>
+  </div>
+  <div className="bg-white border border-stone-200 rounded-xl p-4 md:p-5 shadow-sm">
+    <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Sin pago</p>
+    <p className="text-2xl md:text-3xl font-bold text-red-600">{sinPago}</p>
+  </div>
+</div>
 
       {/* Tabla */}
-      <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-stone-200 rounded-xl overflow-x-auto shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-stone-50 border-b border-stone-200">

@@ -18,7 +18,6 @@ import {
   UserGroupIcon,
   ShoppingCartIcon,
 } from '@hugeicons/core-free-icons';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -52,33 +51,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ];
 
   const user = {
-  name: session?.user?.name || 'Usuario',
-  email: session?.user?.email || '',
-  avatar: session?.user?.image ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(session?.user?.name || 'U')}&background=1e293b&color=fff&size=128`,
-  role: session?.user?.role || 'USER',
-};
+    name: session?.user?.name || 'Usuario',
+    email: session?.user?.email || '',
+    avatar: session?.user?.image ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(session?.user?.name || 'U')}&background=1e293b&color=fff&size=128`,
+    role: session?.user?.role || 'USER',
+  };
 
   return (
     <Sidebar collapsible='offcanvas' {...props}>
-      {/* Header */}
       <SidebarHeader className="px-6 py-6 border-b border-stone-100">
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href='/' className="flex flex-col gap-0.5">
+            <a href='/' className="flex flex-col gap-0.5">
               <span className="font-serif font-bold text-2xl text-stone-900 tracking-tight">TheDevLab</span>
               <span className="text-[11px] uppercase tracking-widest text-stone-400 font-medium">Restaurante</span>
-            </Link>
+            </a>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-
-      {/* Nav */}
       <SidebarContent className="px-3 py-4">
         <NavSecondary items={navItems} />
       </SidebarContent>
-
-      {/* Footer */}
       <SidebarFooter className="border-t border-stone-100 p-4">
         <NavUser user={user} />
       </SidebarFooter>

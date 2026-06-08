@@ -155,7 +155,7 @@ export default function UsersPage() {
           <p className="text-3xl font-bold text-stone-900">{users.length}</p>
         </div>
         <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Administradores</p>
+          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Admins</p>
           <p className="text-3xl font-bold text-amber-600">{admins}</p>
         </div>
         <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
@@ -165,7 +165,7 @@ export default function UsersPage() {
       </div>
 
       {/* Tabla */}
-      <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-stone-200 rounded-xl overflow-x-auto shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-stone-50 border-b border-stone-200">
