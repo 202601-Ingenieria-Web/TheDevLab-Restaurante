@@ -14,8 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Logout01Icon, MoreVerticalCircle01Icon } from "@hugeicons/core-free-icons"
+import { Logout01Icon, MoreVerticalCircle01Icon, UserCircle02Icon } from "@hugeicons/core-free-icons"
 import { signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export function NavUser({
   user,
@@ -27,6 +28,8 @@ export function NavUser({
     role?: string
   }
 }) {
+  const router = useRouter();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -63,6 +66,14 @@ export function NavUser({
             </div>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => router.push('/perfil')}
+          className="cursor-pointer mx-1 rounded-lg"
+        >
+          <HugeiconsIcon icon={UserCircle02Icon} strokeWidth={2} className="w-4 h-4 mr-2" />
+          Mi perfil
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => signOut({ callbackUrl: '/' })}

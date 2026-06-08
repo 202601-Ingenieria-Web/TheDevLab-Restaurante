@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-// GET - Obtener movimientos por maestro
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
   const maestroId = searchParams.get('maestroId');
@@ -23,17 +22,30 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-// POST - Crear un movimiento
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const { type, quantity, maestroId, userId } = await request.json();
+
+    if (type === 'SALIDA') {
+      const maestro = await prisma.maestro.findUnique({
+        where: { id: maestroId },
+      });
+      if (!maestro) {
+        return NextResponse.json({ error: 'Ingrediente no encontrado' }, { status: 404 });
+      }
+      if (maestro.balance < quantity) {
+        return NextResponse.json(
+          { error: `Stock insuficiente. Disponible: ${maestro.balance} ${maestro.unit || 'und'}` },
+          { status: 400 }
+        );
+      }
+    }
 
     const movimiento = await prisma.movement.create({
       data: { type, quantity, maestroId, userId },
       include: { user: true },
     });
 
-    // Actualizar el saldo del maestro
     const delta = type === 'ENTRADA' ? quantity : -quantity;
     await prisma.maestro.update({
       where: { id: maestroId },

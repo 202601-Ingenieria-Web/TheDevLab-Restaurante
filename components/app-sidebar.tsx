@@ -52,11 +52,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ];
 
   const user = {
-    name: session?.user?.name || 'Usuario',
-    email: session?.user?.email || '',
-    avatar: session?.user?.image || '',
-    role: session?.user?.role || 'USER',
-  };
+  name: session?.user?.name || 'Usuario',
+  email: session?.user?.email || '',
+  avatar: session?.user?.image ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(session?.user?.name || 'U')}&background=1e293b&color=fff&size=128`,
+  role: session?.user?.role || 'USER',
+};
 
   return (
     <Sidebar collapsible='offcanvas' {...props}>

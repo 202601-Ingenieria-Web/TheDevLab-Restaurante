@@ -19,10 +19,24 @@ export async function GET(): Promise<NextResponse> {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const { name, balance, userId, unit } = await request.json();
+    
     const maestro = await prisma.maestro.create({
       data: { name, balance, userId, unit },
       include: { user: true },
     });
+
+    // Registrar el stock inicial como movimiento de ENTRADA
+    if (balance > 0) {
+      await prisma.movement.create({
+        data: {
+          type: 'ENTRADA',
+          quantity: balance,
+          maestroId: maestro.id,
+          userId,
+        },
+      });
+    }
+
     return NextResponse.json({ maestro }, { status: 201 });
   } catch (error) {
     console.error('Error creating maestro:', error);

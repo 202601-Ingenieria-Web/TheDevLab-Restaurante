@@ -28,7 +28,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
   Legend,
 } from 'recharts';
 
@@ -95,13 +94,17 @@ export default function TransaccionesPage() {
           userId: session?.user?.id || '',
         }),
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Error al crear el movimiento');
+        return;
+      }
       toast.success('Movimiento creado exitosamente');
       setOpen(false);
       setQuantity('');
       const res2 = await fetch(`/api/movimientos?maestroId=${selectedMaestro}`);
-      const data = await res2.json();
-      setMovimientos(data.movimientos || []);
+      const data2 = await res2.json();
+      setMovimientos(data2.movimientos || []);
     } catch {
       toast.error('Error al crear el movimiento');
     } finally {
@@ -109,12 +112,11 @@ export default function TransaccionesPage() {
     }
   };
 
-  const chartData = movimientos
-    .slice()
-    .reverse()
+  const chartData = [...movimientos]
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
     .reduce((acc: { fecha: string; entradas: number; salidas: number }[], mov) => {
       const date = new Date(mov.createdAt);
-      const fecha = `${date.toLocaleString('es-CO', { month: 'short' })} ${date.getFullYear()}`;
+      const fecha = `${date.getDate()}/${date.getMonth() + 1}`;
       const existing = acc.find((d) => d.fecha === fecha);
       if (existing) {
         if (mov.type === 'ENTRADA') existing.entradas += mov.quantity;
@@ -137,7 +139,7 @@ export default function TransaccionesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Inventario - Movimientos</p>
+          <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Inventario</p>
           <h1 className="text-3xl font-bold text-stone-900">Gestión de Transacciones</h1>
           <p className="text-stone-500 text-sm mt-1">Administra los movimientos del inventario del restaurante.</p>
         </div>
@@ -239,12 +241,12 @@ export default function TransaccionesPage() {
           <div className="mb-6">
             <p className="text-xs uppercase tracking-widest text-stone-400 mb-1">Evolución</p>
             <h2 className="text-lg font-semibold text-stone-900">
-              Movimientos mensuales — {maestroSeleccionado?.name}
+              Movimientos del mes — {maestroSeleccionado?.name}
             </h2>
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <BarChart data={chartData} barGap={4} barCategoryGap="30%">
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
               <XAxis dataKey="fecha" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip
@@ -263,7 +265,6 @@ export default function TransaccionesPage() {
                 formatter={(value) => value === 'entradas' ? 'Entradas' : 'Salidas'}
                 wrapperStyle={{ fontSize: 12, paddingTop: 16 }}
               />
-              <ReferenceLine y={0} stroke="#e2e8f0" />
               <Bar dataKey="entradas" fill="#15803d" radius={[4, 4, 0, 0]} name="entradas" />
               <Bar dataKey="salidas" fill="#dc2626" radius={[4, 4, 0, 0]} name="salidas" />
             </BarChart>

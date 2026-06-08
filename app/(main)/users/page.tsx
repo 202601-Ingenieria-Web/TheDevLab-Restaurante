@@ -34,11 +34,15 @@ export default function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
 
+  // Modal editar
   const [editOpen, setEditOpen] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
   const [role, setRole] = useState('');
 
+  // Modal crear
   const [createOpen, setCreateOpen] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
   const [newName, setNewName] = useState('');
@@ -65,6 +69,8 @@ export default function UsersPage() {
   const handleEdit = (user: User) => {
     setSelectedUser(user);
     setRole(user.role);
+    setEditName(user.name);
+    setEditEmail(user.email);
     setEditOpen(true);
   };
 
@@ -75,14 +81,14 @@ export default function UsersPage() {
       const res = await fetch(`/api/users/${selectedUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role }),
+        body: JSON.stringify({ role, name: editName, email: editEmail }),
       });
       if (!res.ok) throw new Error();
-      toast.success('Rol actualizado exitosamente');
+      toast.success('Usuario actualizado exitosamente');
       setEditOpen(false);
       fetchUsers();
     } catch {
-      toast.error('Error al actualizar el rol');
+      toast.error('Error al actualizar el usuario');
     } finally {
       setEditLoading(false);
     }
@@ -138,7 +144,7 @@ export default function UsersPage() {
           onClick={() => setCreateOpen(true)}
           className="bg-stone-900 hover:bg-stone-700 text-white px-6 h-10 text-sm font-medium"
         >
-          + Crear mesero
+          + Crear usuario
         </Button>
       </div>
 
@@ -201,7 +207,7 @@ export default function UsersPage() {
                       onClick={() => handleEdit(u)}
                       className="text-xs text-stone-600 hover:text-stone-900 font-medium underline-offset-2 hover:underline"
                     >
-                      Editar rol
+                      Editar usuario
                     </button>
                   </td>
                 </tr>
@@ -211,14 +217,31 @@ export default function UsersPage() {
         </table>
       </div>
 
-      {/* Modal editar rol */}
+      {/* Modal editar usuario */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="rounded-xl max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-stone-900">Editar rol</DialogTitle>
+            <DialogTitle className="text-lg font-semibold text-stone-900">Editar usuario</DialogTitle>
             <p className="text-stone-500 text-sm">{selectedUser?.email}</p>
           </DialogHeader>
           <div className="space-y-4 mt-2">
+            <div className="space-y-1.5">
+              <Label className="text-stone-700 text-sm font-medium">Nombre completo</Label>
+              <Input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="h-10 border-stone-200"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-stone-700 text-sm font-medium">Correo electrónico</Label>
+              <Input
+                type="email"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+                className="h-10 border-stone-200"
+              />
+            </div>
             <div className="space-y-1.5">
               <Label className="text-stone-700 text-sm font-medium">Rol</Label>
               <Select onValueChange={setRole} value={role}>
@@ -247,7 +270,7 @@ export default function UsersPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="rounded-xl max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-stone-900">Crear mesero</DialogTitle>
+            <DialogTitle className="text-lg font-semibold text-stone-900">Crear usuario</DialogTitle>
             <p className="text-stone-500 text-sm">Agrega un nuevo miembro al equipo</p>
           </DialogHeader>
           <div className="space-y-4 mt-2">
