@@ -14,7 +14,7 @@ Aplicación web fullstack que permite gestionar de forma integral las operacione
 
 ##  Demo
 
-🔗 [Ver aplicación desplegada]()
+https://thedevlab-restaurante.vercel.app/
 
 ##  Credenciales de prueba
 
